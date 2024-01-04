@@ -1,0 +1,46 @@
+authenticate
+
+config
+
+controller
+BaseController.Java
+|-- user
+  |-- UserController.java
+  |-- request
+      |-- create_user
+          |-- CreateUserRequest.java
+      |-- update_user
+          |-- UpdateUserRequest.java
+  |-- response
+      |-- create_user
+          |-- CreateUserResponse.java
+      |-- update_user
+          |-- UpdateUserResponse.java
+
+exception
+|-- BadRequest.Java
+|-- InternalServerError.Java
+|-- PageNotFound.Java
+
+service
+|-- UserService (interface)
+|-- service_implement
+   |-- UserServiceImpl (logic - class)
+
+model
+|-- user
+    |-- User.java
+
+repository
+|-- user
+    |-- UserRepository.java
+
+utils
+|-- user
+    |-- UserUtils.java
+
+
+
+db -> model (dto) -> repsone model
+
+
