@@ -1,6 +1,7 @@
 package classy.classyapp.BackendApi.service.impl.user_info;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,7 +26,7 @@ public class UserAccountServiceImpl implements UserDetailsService{
             throw new UsernameNotFoundException("user not found with username -" +
                     username);
         }
-        java.util.List<GrantedAuthority> authorities = new ArrayList<>();
+        List<GrantedAuthority> authorities = new ArrayList<>();
         return new org.springframework.security.core.userdetails.User(user.getUserName(),
                 user.getPassword(), authorities);
     }

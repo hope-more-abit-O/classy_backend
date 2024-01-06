@@ -2,8 +2,10 @@ package classy.classyapp.BackendApi.model.user;
 
 import classy.classyapp.BackendApi.converter.ZonedDateTimeConverter;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {

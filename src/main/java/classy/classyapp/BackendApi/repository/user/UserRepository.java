@@ -1,9 +1,13 @@
 package classy.classyapp.BackendApi.repository.user;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import classy.classyapp.BackendApi.model.user.User;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+@Transactional
+@Repository
+public interface UserRepository extends JpaRepository<User, String> {
     User findByEmail(String email);
     User findByUserName(String userName);
 }

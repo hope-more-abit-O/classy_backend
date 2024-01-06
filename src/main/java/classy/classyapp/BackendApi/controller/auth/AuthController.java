@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,38 +36,17 @@ import classy.classyapp.BackendApi.utils.email.EmailUtils;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class AuthController {
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private JwtProvider jwtProvider;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserAccountServiceImpl userAccountService;
-
-    @Autowired
-    private EmailUtils emailUtils;
-
-    public AuthController() {
-    }
-
-    public AuthController(UserRepository userRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder,
-            UserAccountServiceImpl userAccountService) {
-        this.userRepository = userRepository;
-        this.jwtProvider = jwtProvider;
-        this.passwordEncoder = passwordEncoder;
-        this.userAccountService = userAccountService;
-    }
+    private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
+    private final UserAccountServiceImpl userAccountService;
+    private final EmailUtils emailUtils;
 
     @PostMapping("register")
     public ResponseEntity<ResponseObject> createUserHandler(@RequestBody User user) {
         try {
-
             String email = user.getEmail();
             String password = user.getPassword();
             String name = user.getName();
@@ -192,13 +172,9 @@ public class AuthController {
     @PostMapping("/password/confirm")
     public ResponseEntity<ResponseObject> confirmResetPassword(@RequestBody ConfirmResetPasswordRequest request) {
 
-
-
-
-
-
         ResponseObject responseObject = new ResponseObject(true, "Successfully", true);
         return new ResponseEntity<>(responseObject, HttpStatus.OK);
 
     }
+
 }
