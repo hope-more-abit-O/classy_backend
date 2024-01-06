@@ -1,13 +1,14 @@
 package classy.classyapp.BackendApi.controller.auth;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,12 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 
 import classy.classyapp.BackendApi.config.JwtProvider;
 import classy.classyapp.BackendApi.globalRequest.ConfirmResetPasswordRequest;
-import classy.classyapp.BackendApi.globalRequest.EmailRequest;
 import classy.classyapp.BackendApi.globalRequest.LoginRequest;
 import classy.classyapp.BackendApi.globalRequest.ResetPasswordRequest;
 import classy.classyapp.BackendApi.globalResponse.AuthResponse;
@@ -95,7 +93,7 @@ public class AuthController {
             createdUser.setAddress(address);
             createdUser.setUserName(username);
             createdUser.setPhone(phone);
-            createdUser.setUserRole(userRole);
+            createdUser.setUserRole(Role.STUDENT);
             createdUser.setDateOfBirth(dateOfBirth);
             createdUser.setStatus(AccountStatus.ACTIVE);
 
@@ -191,11 +189,6 @@ public class AuthController {
 
     @PostMapping("/password/confirm")
     public ResponseEntity<ResponseObject> confirmResetPassword(@RequestBody ConfirmResetPasswordRequest request) {
-
-
-
-
-
 
         ResponseObject responseObject = new ResponseObject(true, "Successfully", true);
         return new ResponseEntity<>(responseObject, HttpStatus.OK);
