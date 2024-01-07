@@ -13,10 +13,11 @@ jobs:
       - name: Checkout Github Action
         uses: actions/checkout@v2
         
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
         with:
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: '17'
+          distribution: 'zulu'
 
       - name: maven build, clean
         run: |
@@ -32,7 +33,7 @@ jobs:
         with:
           azure-subscription: ${{ env.AZURE_SUBSCRIPTION }}
           action: Deploy
-          service-name: spring-blog
-          app-name: spring-blog
+          service-name: classyeducation
+          app-name: classyeducation
           use-staging-deployment: false
           package: ${{ env.ASC_PACKAGE_PATH }}/**/*.jar
