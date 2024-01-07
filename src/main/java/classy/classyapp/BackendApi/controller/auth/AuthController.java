@@ -46,17 +46,15 @@ public class AuthController {
     private final UserAccountServiceImpl userAccountService;
     private final EmailUtils emailUtils;
 
-    public AuthController() {
-    }
-
     public AuthController(UserRepository userRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder,
-            UserAccountServiceImpl userAccountService) {
+            UserAccountServiceImpl userAccountService, EmailUtils emailUtils, StudentRepository studentRepository) {
         this.userRepository = userRepository;
         this.jwtProvider = jwtProvider;
         this.passwordEncoder = passwordEncoder;
         this.userAccountService = userAccountService;
+        this.emailUtils = emailUtils;
+        this.studentRepository = studentRepository;
     }
-
 
     @PostMapping("register")
     public ResponseEntity<ResponseObject> createUserHandler(@RequestBody User user) {
@@ -98,8 +96,8 @@ public class AuthController {
                 student.setPhone(phone);
                 student.setAddress(address);
                 student.setDateOfBirth(dateOfBirth);
-                student.setStatus(AccountStatus.ACTIVE); 
-                student.setUserRole(Role.STUDENT); 
+                student.setStatus(AccountStatus.ACTIVE);
+                student.setUserRole(Role.STUDENT);
 
                 Student savedStudent = studentRepository.save(student);
 
