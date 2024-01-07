@@ -27,6 +27,8 @@ import classy.classyapp.BackendApi.globalResponse.ResponseObject;
 import classy.classyapp.BackendApi.model.user.AccountStatus;
 import classy.classyapp.BackendApi.model.user.Role;
 import classy.classyapp.BackendApi.model.user.User;
+import classy.classyapp.BackendApi.model.user.student.Student;
+import classy.classyapp.BackendApi.repository.student.StudentRepository;
 import classy.classyapp.BackendApi.repository.user.UserRepository;
 import classy.classyapp.BackendApi.service.impl.user_info.UserAccountServiceImpl;
 import classy.classyapp.BackendApi.utils.email.EmailUtils;
@@ -49,6 +51,9 @@ public class AuthController {
 
     @Autowired
     private EmailUtils emailUtils;
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     public AuthController() {
     }
@@ -86,33 +91,65 @@ public class AuthController {
                 throw new RuntimeException("Username is already used");
             }
 
-            User createdUser = new User();
-            createdUser.setEmail(email);
-            createdUser.setPassword(passwordEncoder.encode(password));
-            createdUser.setName(name);
-            createdUser.setAddress(address);
-            createdUser.setUserName(username);
-            createdUser.setPhone(phone);
-            createdUser.setUserRole(Role.STUDENT);
-            createdUser.setDateOfBirth(dateOfBirth);
-            createdUser.setStatus(AccountStatus.ACTIVE);
+            if (user.getUserRole().equals(Role.STUDENT)) {
 
-            User savedUser = userRepository.save(createdUser);
+                Student student = new Student();
+                Authentication authentication = new UsernamePasswordAuthenticationToken(student.getEmail(),
+                        student.getPassword());
 
-            Authentication authentication = new UsernamePasswordAuthenticationToken(savedUser.getEmail(),
-                    savedUser.getPassword());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                String token = jwtProvider.generateToken(authentication);
+                student.setEmail(email);
+                student.setPassword(passwordEncoder.encode(password));
+                student.setName(name);
+                student.setUserName(username);
+                student.setPhone(phone);
+                student.setAddress(address);
+                student.setDateOfBirth(dateOfBirth);
+                student.setStatus(AccountStatus.ACTIVE); 
+                student.setUserRole(Role.STUDENT); 
 
-            String token = jwtProvider.generateToken(authentication);
+                Student savedStudent = studentRepository.save(student);
 
-            AuthResponse authResponse = new AuthResponse();
-            authResponse.setJwt(token);
-            authResponse.setMessage("Register Successfully");
-            authResponse.setUser(savedUser);
+                AuthResponse authResponse = new AuthResponse();
+                authResponse.setJwt(token);
+                authResponse.setMessage("Register Successfully");
+                authResponse.setUser(savedStudent);
 
-            ResponseObject responseObject = new ResponseObject(true, "User registered successfully", authResponse);
-            return new ResponseEntity<>(responseObject, HttpStatus.CREATED);
+                return new ResponseEntity<>(new ResponseObject(true, "Student registered successfully", authResponse),
+                        HttpStatus.CREATED);
+
+            } else {
+
+                User createdUser = new User();
+                createdUser.setEmail(email);
+                createdUser.setPassword(passwordEncoder.encode(password));
+                createdUser.setName(name);
+                createdUser.setAddress(address);
+                createdUser.setUserName(username);
+                createdUser.setPhone(phone);
+                createdUser.setUserRole(Role.STUDENT);
+                createdUser.setDateOfBirth(dateOfBirth);
+                createdUser.setStatus(AccountStatus.ACTIVE);
+
+                User savedUser = userRepository.save(createdUser);
+
+                Authentication authentication = new UsernamePasswordAuthenticationToken(savedUser.getEmail(),
+                        savedUser.getPassword());
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                String token = jwtProvider.generateToken(authentication);
+
+                AuthResponse authResponse = new AuthResponse();
+                authResponse.setJwt(token);
+                authResponse.setMessage("Register Successfully");
+                authResponse.setUser(savedUser);
+
+                ResponseObject responseObject = new ResponseObject(true, "User registered successfully", authResponse);
+                return new ResponseEntity<>(responseObject, HttpStatus.CREATED);
+            }
         } catch (Exception e) {
             ResponseObject responseObject = new ResponseObject(false, e.getMessage(), null);
             return new ResponseEntity<>(responseObject, HttpStatus.BAD_REQUEST);

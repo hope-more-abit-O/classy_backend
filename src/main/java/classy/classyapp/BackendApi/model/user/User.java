@@ -15,6 +15,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "users")
 public class User {
     @Id
@@ -29,7 +30,6 @@ public class User {
     private String address;
     @JsonIgnore
     private String resetToken;
-    
     @Convert(converter = ZonedDateTimeConverter.class)
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "dd-MM-yyyy")
