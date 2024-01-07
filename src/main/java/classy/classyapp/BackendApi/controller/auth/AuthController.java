@@ -3,6 +3,7 @@ package classy.classyapp.BackendApi.controller.auth;
 import java.util.Date;
 import java.util.UUID;
 
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,16 +36,9 @@ import classy.classyapp.BackendApi.service.impl.user_info.UserAccountServiceImpl
 import classy.classyapp.BackendApi.utils.email.EmailUtils;
 
 @RestController
-@RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class AuthController {
-
-    private final StudentRepository studentRepository;
-    private final UserRepository userRepository;
-    private final JwtProvider jwtProvider;
-    private final PasswordEncoder passwordEncoder;
-    private final UserAccountServiceImpl userAccountService;
-    private final EmailUtils emailUtils;
 
     public AuthController(UserRepository userRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder,
             UserAccountServiceImpl userAccountService, EmailUtils emailUtils, StudentRepository studentRepository) {
@@ -55,6 +49,13 @@ public class AuthController {
         this.emailUtils = emailUtils;
         this.studentRepository = studentRepository;
     }
+
+    private final StudentRepository studentRepository;
+    private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
+    private final UserAccountServiceImpl userAccountService;
+    private final EmailUtils emailUtils;
 
     @PostMapping("register")
     public ResponseEntity<ResponseObject> createUserHandler(@RequestBody User user) {
