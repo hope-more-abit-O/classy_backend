@@ -3,6 +3,7 @@ package classy.classyapp.BackendApi.controller.auth;
 import java.util.Date;
 import java.util.UUID;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,25 +36,15 @@ import classy.classyapp.BackendApi.utils.email.EmailUtils;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private JwtProvider jwtProvider;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserAccountServiceImpl userAccountService;
-
-    @Autowired
-    private EmailUtils emailUtils;
-
-    @Autowired
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
+    private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
+    private final UserAccountServiceImpl userAccountService;
+    private final EmailUtils emailUtils;
 
     public AuthController() {
     }
@@ -66,10 +57,10 @@ public class AuthController {
         this.userAccountService = userAccountService;
     }
 
+
     @PostMapping("register")
     public ResponseEntity<ResponseObject> createUserHandler(@RequestBody User user) {
         try {
-
             String email = user.getEmail();
             String password = user.getPassword();
             String name = user.getName();
@@ -231,4 +222,5 @@ public class AuthController {
         return new ResponseEntity<>(responseObject, HttpStatus.OK);
 
     }
+
 }

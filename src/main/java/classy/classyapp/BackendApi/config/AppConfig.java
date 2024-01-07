@@ -33,7 +33,7 @@ public class AppConfig {
 
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtValidator(), BasicAuthenticationFilter.class);
+                .addFilterBefore(new JwtValidatorFilter(), BasicAuthenticationFilter.class);
         return http.build();
     }
 
