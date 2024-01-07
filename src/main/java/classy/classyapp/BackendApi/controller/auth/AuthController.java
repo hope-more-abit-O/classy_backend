@@ -3,8 +3,6 @@ package classy.classyapp.BackendApi.controller.auth;
 import java.util.Date;
 import java.util.UUID;
 
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +52,7 @@ public class AuthController {
 
     @Autowired
     private UserAccountServiceImpl userAccountService;
-    
+
     @Autowired
     private EmailUtils emailUtils;
 
