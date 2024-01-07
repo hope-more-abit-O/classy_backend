@@ -36,9 +36,30 @@ import classy.classyapp.BackendApi.service.impl.user_info.UserAccountServiceImpl
 import classy.classyapp.BackendApi.utils.email.EmailUtils;
 
 @RestController
-@RequiredArgsConstructor
+
 @RequestMapping("/api/v1")
 public class AuthController {
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtProvider jwtProvider;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserAccountServiceImpl userAccountService;
+    
+    @Autowired
+    private EmailUtils emailUtils;
+
+    public AuthController() {
+    }
 
     public AuthController(UserRepository userRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder,
             UserAccountServiceImpl userAccountService, EmailUtils emailUtils, StudentRepository studentRepository) {
@@ -49,13 +70,6 @@ public class AuthController {
         this.emailUtils = emailUtils;
         this.studentRepository = studentRepository;
     }
-
-    private final StudentRepository studentRepository;
-    private final UserRepository userRepository;
-    private final JwtProvider jwtProvider;
-    private final PasswordEncoder passwordEncoder;
-    private final UserAccountServiceImpl userAccountService;
-    private final EmailUtils emailUtils;
 
     @PostMapping("register")
     public ResponseEntity<ResponseObject> createUserHandler(@RequestBody User user) {
