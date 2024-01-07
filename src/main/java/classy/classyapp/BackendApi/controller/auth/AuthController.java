@@ -56,18 +56,20 @@ public class AuthController {
     @Autowired
     private EmailUtils emailUtils;
 
+
     public AuthController() {
     }
 
-    public AuthController(UserRepository userRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder,
-            UserAccountServiceImpl userAccountService, EmailUtils emailUtils, StudentRepository studentRepository) {
+
+    public AuthController(StudentRepository studentRepository, UserRepository userRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder, UserAccountServiceImpl userAccountService, EmailUtils emailUtils) {
+        this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.jwtProvider = jwtProvider;
         this.passwordEncoder = passwordEncoder;
         this.userAccountService = userAccountService;
         this.emailUtils = emailUtils;
-        this.studentRepository = studentRepository;
     }
+
 
     @PostMapping("register")
     public ResponseEntity<ResponseObject> createUserHandler(@RequestBody User user) {
