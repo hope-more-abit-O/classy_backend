@@ -3,9 +3,11 @@ package classy.classyapp.BackendApi.service.impl.student;
 import classy.classyapp.BackendApi.globalResponse.ResponseObject;
 import classy.classyapp.BackendApi.model.user.student.Student;
 import classy.classyapp.BackendApi.repository.student.StudentRepository;
+import classy.classyapp.BackendApi.request.UpdateStudentRequest;
 import classy.classyapp.BackendApi.service.student.StudentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +19,9 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     private StudentRepository studentRepository;
 
-    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public ResponseObject getAllStudents() {
         List<Student> students = studentRepository.findAll();
@@ -26,4 +30,28 @@ public class StudentServiceImpl implements StudentService {
         }
         return new ResponseObject(true, "All students has bên displayed", students);
     }
+
+    @Override
+    public Student updateStudent(String id, UpdateStudentRequest updateRequest) {
+        Optional<Student> optionalStudent = studentRepository.findById(id);
+        if (!optionalStudent.isPresent()) {
+            throw new RuntimeException("Student not found");
+        }
+
+        Student student = optionalStudent.get();
+        student.setEmail(updateRequest.email());
+        student.setPassword(passwordEncoder.encode(updateRequest.password()));
+        student.setName(updateRequest.name());
+        student.setUserName(updateRequest.userName());
+        student.setPhone(updateRequest.phone());
+        student.setAddress(updateRequest.address());
+        student.setDateOfBirth(updateRequest.dateOfBirth());
+
+        if (student.getInfo() != null && updateRequest.info() != null) {
+            student.getInfo().setSchool(updateRequest.info().getSchool());
+        }
+
+        return studentRepository.save(student);
+    }
 }
+
