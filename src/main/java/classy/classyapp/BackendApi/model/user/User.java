@@ -1,6 +1,7 @@
 package classy.classyapp.BackendApi.model.user;
 
 import classy.classyapp.BackendApi.converter.ZonedDateTimeConverter;
+import classy.classyapp.BackendApi.model.student_info.StudentInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -54,4 +56,9 @@ public class User {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Convert(converter = ZonedDateTimeConverter.class)
     private LocalDateTime createTime;
+
+
+    @Transient
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private StudentInfo studentInfo;
 }
