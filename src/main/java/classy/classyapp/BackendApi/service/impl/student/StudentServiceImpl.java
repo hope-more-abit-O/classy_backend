@@ -5,11 +5,9 @@ import classy.classyapp.BackendApi.model.user.student.Student;
 import classy.classyapp.BackendApi.repository.student.StudentRepository;
 import classy.classyapp.BackendApi.request.UpdateStudentRequest;
 import classy.classyapp.BackendApi.service.student.StudentService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -28,14 +26,14 @@ public class StudentServiceImpl implements StudentService {
         if (students.isEmpty()) {
             return new ResponseObject(false, "No students found", null);
         }
-        return new ResponseObject(true, "All students has bên displayed", students);
+        return new ResponseObject(true, "All students displayed", students);
     }
 
     @Override
-    public Student updateStudent(String id, UpdateStudentRequest updateRequest) {
+    public ResponseObject updateStudent(String id, UpdateStudentRequest updateRequest) {
         Optional<Student> optionalStudent = studentRepository.findById(id);
         if (!optionalStudent.isPresent()) {
-            throw new RuntimeException("Student not found");
+            return new ResponseObject(false, "Student not found", null);
         }
 
         Student student = optionalStudent.get();
@@ -51,7 +49,8 @@ public class StudentServiceImpl implements StudentService {
             student.getInfo().setSchool(updateRequest.info().getSchool());
         }
 
-        return studentRepository.save(student);
+        Student updatedStudent = studentRepository.save(student);
+        return new ResponseObject(true, "Student updated successfully", updatedStudent);
     }
-}
 
+}

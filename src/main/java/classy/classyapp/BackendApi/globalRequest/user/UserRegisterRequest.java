@@ -1,13 +1,16 @@
-package classy.classyapp.BackendApi.globalResponse.user;
+package classy.classyapp.BackendApi.globalRequest.user;
 
 import java.util.Date;
 
-import classy.classyapp.BackendApi.globalResponse.student.StudentInfoDTO;
+import classy.classyapp.BackendApi.globalResponse.student.StudentInfoResponse;
+import classy.classyapp.BackendApi.model.teacher_info.TeacherInfo;
 import classy.classyapp.BackendApi.model.user.AccountStatus;
 import classy.classyapp.BackendApi.model.user.Role;
 import java.util.Objects;
 
-public class UserRegisterDTO {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+public class UserRegisterRequest {
      private String email;
     private String password;
     private String name;
@@ -17,13 +20,17 @@ public class UserRegisterDTO {
     private Role userRole;
     private Date dateOfBirth;
     private AccountStatus status;
-    private StudentInfoDTO studentInfo;
+    private StudentInfoResponse studentInfo;
+    @JsonIgnoreProperties(value = { "teacherId" })
+    private TeacherInfo teacherInfo;
 
 
-    public UserRegisterDTO() {
+
+
+    public UserRegisterRequest() {
     }
 
-    public UserRegisterDTO(String email, String password, String name, String userName, String phone, String address, Role userRole, Date dateOfBirth, AccountStatus status, StudentInfoDTO studentInfo) {
+    public UserRegisterRequest(String email, String password, String name, String userName, String phone, String address, Role userRole, Date dateOfBirth, AccountStatus status, StudentInfoResponse studentInfo, TeacherInfo teacherInfo) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -34,6 +41,7 @@ public class UserRegisterDTO {
         this.dateOfBirth = dateOfBirth;
         this.status = status;
         this.studentInfo = studentInfo;
+        this.teacherInfo = teacherInfo;
     }
 
     public String getEmail() {
@@ -108,61 +116,74 @@ public class UserRegisterDTO {
         this.status = status;
     }
 
-    public StudentInfoDTO getStudentInfo() {
+    public StudentInfoResponse getStudentInfo() {
         return this.studentInfo;
     }
 
-    public void setStudentInfo(StudentInfoDTO studentInfo) {
+    public void setStudentInfo(StudentInfoResponse studentInfo) {
         this.studentInfo = studentInfo;
     }
 
-    public UserRegisterDTO email(String email) {
+    public TeacherInfo getTeacherInfo() {
+        return this.teacherInfo;
+    }
+
+    public void setTeacherInfo(TeacherInfo teacherInfo) {
+        this.teacherInfo = teacherInfo;
+    }
+
+    public UserRegisterRequest email(String email) {
         setEmail(email);
         return this;
     }
 
-    public UserRegisterDTO password(String password) {
+    public UserRegisterRequest password(String password) {
         setPassword(password);
         return this;
     }
 
-    public UserRegisterDTO name(String name) {
+    public UserRegisterRequest name(String name) {
         setName(name);
         return this;
     }
 
-    public UserRegisterDTO userName(String userName) {
+    public UserRegisterRequest userName(String userName) {
         setUserName(userName);
         return this;
     }
 
-    public UserRegisterDTO phone(String phone) {
+    public UserRegisterRequest phone(String phone) {
         setPhone(phone);
         return this;
     }
 
-    public UserRegisterDTO address(String address) {
+    public UserRegisterRequest address(String address) {
         setAddress(address);
         return this;
     }
 
-    public UserRegisterDTO userRole(Role userRole) {
+    public UserRegisterRequest userRole(Role userRole) {
         setUserRole(userRole);
         return this;
     }
 
-    public UserRegisterDTO dateOfBirth(Date dateOfBirth) {
+    public UserRegisterRequest dateOfBirth(Date dateOfBirth) {
         setDateOfBirth(dateOfBirth);
         return this;
     }
 
-    public UserRegisterDTO status(AccountStatus status) {
+    public UserRegisterRequest status(AccountStatus status) {
         setStatus(status);
         return this;
     }
 
-    public UserRegisterDTO studentInfo(StudentInfoDTO studentInfo) {
+    public UserRegisterRequest studentInfo(StudentInfoResponse studentInfo) {
         setStudentInfo(studentInfo);
+        return this;
+    }
+
+    public UserRegisterRequest teacherInfo(TeacherInfo teacherInfo) {
+        setTeacherInfo(teacherInfo);
         return this;
     }
 }
