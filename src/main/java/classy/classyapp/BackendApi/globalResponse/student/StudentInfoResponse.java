@@ -1,17 +1,16 @@
 package classy.classyapp.BackendApi.globalResponse.student;
 
 import classy.classyapp.BackendApi.model.student_info.StudyStatus;
-import java.util.Objects;
 
-public class StudentInfoDTO {
+public class StudentInfoResponse {
     private String school;
     private StudyStatus studyStatus;
 
 
-    public StudentInfoDTO() {
+    public StudentInfoResponse() {
     }
 
-    public StudentInfoDTO(String school, StudyStatus studyStatus) {
+    public StudentInfoResponse(String school, StudyStatus studyStatus) {
         this.school = school;
         this.studyStatus = studyStatus;
     }
@@ -32,12 +31,12 @@ public class StudentInfoDTO {
         this.studyStatus = studyStatus;
     }
 
-    public StudentInfoDTO school(String school) {
+    public StudentInfoResponse school(String school) {
         setSchool(school);
         return this;
     }
 
-    public StudentInfoDTO studyStatus(StudyStatus studyStatus) {
+    public StudentInfoResponse studyStatus(StudyStatus studyStatus) {
         setStudyStatus(studyStatus);
         return this;
     }

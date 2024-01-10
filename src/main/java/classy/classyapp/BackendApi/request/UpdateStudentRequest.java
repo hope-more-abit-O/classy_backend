@@ -1,7 +1,7 @@
 package classy.classyapp.BackendApi.request;
 
 import java.util.Date;
-import classy.classyapp.BackendApi.globalResponse.student.StudentInfoDTO;
+import classy.classyapp.BackendApi.globalResponse.student.StudentInfoResponse;
 
 public record UpdateStudentRequest(
     String email,
@@ -11,5 +11,5 @@ public record UpdateStudentRequest(
     String phone,
     String address,
     Date dateOfBirth,
-    StudentInfoDTO info
+    StudentInfoResponse info
 ) {}
