@@ -1,6 +1,8 @@
 package classy.classyapp.BackendApi.service.impl.student;
 
 import classy.classyapp.BackendApi.globalResponse.ResponseObject;
+import classy.classyapp.BackendApi.model.student_info.StudyStatus;
+import classy.classyapp.BackendApi.model.user.AccountStatus;
 import classy.classyapp.BackendApi.model.user.student.Student;
 import classy.classyapp.BackendApi.repository.student.StudentRepository;
 import classy.classyapp.BackendApi.request.UpdateStudentRequest;
@@ -30,6 +32,46 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public ResponseObject getStudentById(String id) {
+        try {
+            Optional<Student> student = studentRepository.findById(id);
+            if (!student.isPresent()) {
+                return new ResponseObject(false, "Student not found", null);
+            }
+            return new ResponseObject(true, "Student retrieved successfully", student.get());
+        } catch (Exception e) {
+            return new ResponseObject(false, e.getMessage(), null);
+        }
+    }
+
+    @Override
+    public ResponseObject getStudentByEmail(String email) {
+        Student student = studentRepository.findByEmail(email);
+        if (student.isEmpty()) {
+            return new ResponseObject(false, "No student found with the email: " + email, null);
+        }
+        return new ResponseObject(true, "Student found", student);
+    }
+
+    @Override
+    public ResponseObject getStudentByName(String name) {
+        List<Student> students = studentRepository.findStudentsByName(name);
+        if (students.isEmpty()) {
+            return new ResponseObject(false, "No students found with the name: " + name, null);
+        }
+        return new ResponseObject(true, "Students found", students);
+    }
+
+    @Override
+    public ResponseObject getAllStudentWithStudyStatus(StudyStatus studyStatus) {
+        List<Student> students = studentRepository.findByStudyStatus(studyStatus);
+        if (students.isEmpty()) {
+            return new ResponseObject(false, "No students found with study status: " + studyStatus, null);
+        }
+        return new ResponseObject(true, "Students found", students);
+    }
+
+    @Override
     public ResponseObject updateStudent(String id, UpdateStudentRequest updateRequest) {
         Optional<Student> optionalStudent = studentRepository.findById(id);
         if (!optionalStudent.isPresent()) {
@@ -52,5 +94,7 @@ public class StudentServiceImpl implements StudentService {
         Student updatedStudent = studentRepository.save(student);
         return new ResponseObject(true, "Student updated successfully", updatedStudent);
     }
+
+
 
 }
