@@ -19,13 +19,19 @@ import classy.classyapp.BackendApi.config.JwtProvider;
 import classy.classyapp.BackendApi.globalRequest.ConfirmResetPasswordRequest;
 import classy.classyapp.BackendApi.globalRequest.LoginRequest;
 import classy.classyapp.BackendApi.globalRequest.ResetPasswordRequest;
+import classy.classyapp.BackendApi.globalRequest.user.UserRegisterRequest;
 import classy.classyapp.BackendApi.globalResponse.AuthResponse;
 import classy.classyapp.BackendApi.globalResponse.ResponseObject;
+import classy.classyapp.BackendApi.model.student_info.StudentInfo;
+import classy.classyapp.BackendApi.model.student_info.StudyStatus;
+import classy.classyapp.BackendApi.model.teacher_info.TeacherInfo;
 import classy.classyapp.BackendApi.model.user.AccountStatus;
 import classy.classyapp.BackendApi.model.user.Role;
 import classy.classyapp.BackendApi.model.user.User;
 import classy.classyapp.BackendApi.model.user.student.Student;
+import classy.classyapp.BackendApi.model.user.teacher.Teacher;
 import classy.classyapp.BackendApi.repository.student.StudentRepository;
+import classy.classyapp.BackendApi.repository.teacher.TeacherRepository;
 import classy.classyapp.BackendApi.repository.user.UserRepository;
 import classy.classyapp.BackendApi.service.impl.user_info.UserAccountServiceImpl;
 import classy.classyapp.BackendApi.utils.email.EmailUtils;
@@ -51,14 +57,16 @@ public class AuthController {
     private UserAccountServiceImpl userAccountService;
 
     @Autowired
-    private EmailUtils emailUtils;
+    private TeacherRepository teacherRepository;
 
+    @Autowired
+    private EmailUtils emailUtils;
 
     public AuthController() {
     }
 
-
-    public AuthController(StudentRepository studentRepository, UserRepository userRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder, UserAccountServiceImpl userAccountService, EmailUtils emailUtils) {
+    public AuthController(StudentRepository studentRepository, UserRepository userRepository, JwtProvider jwtProvider,
+            PasswordEncoder passwordEncoder, UserAccountServiceImpl userAccountService, EmailUtils emailUtils) {
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.jwtProvider = jwtProvider;
@@ -67,97 +75,122 @@ public class AuthController {
         this.emailUtils = emailUtils;
     }
 
-
-    @GetMapping("/encode-password/{password}")
-    public String encode(@PathVariable String password){
-        return passwordEncoder.encode(password);
-    }
-    @PostMapping("register")
-    public ResponseEntity<ResponseObject> createUserHandler(@RequestBody User user) {
+    @PostMapping("/register/user")
+    public ResponseEntity<ResponseObject> createUser(@RequestBody UserRegisterRequest request) {
         try {
-            String email = user.getEmail();
-            String password = user.getPassword();
-            String name = user.getName();
-            String username = user.getUserName();
-            String phone = user.getPhone();
-            String address = user.getAddress();
-            Role userRole = user.getUserRole();
-            Date dateOfBirth = user.getDateOfBirth();
-            AccountStatus accountStatus = user.getStatus();
-
-            User isEmailExist = userRepository.findByEmail(email);
-
-            if (isEmailExist != null) {
+            if (userRepository.findByEmail(request.getEmail()) != null) {
                 throw new RuntimeException("Email is already used");
             }
-
-            User existingUserByUsername = userRepository.findByUserName(username);
-            if (existingUserByUsername != null) {
+            if (userRepository.findByUserName(request.getUserName()) != null) {
                 throw new RuntimeException("Username is already used");
             }
 
-            if (user.getUserRole().equals(Role.STUDENT)) {
+            User user = new User();
+            user.setEmail(request.getEmail());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setName(request.getName());
+            user.setUserName(request.getUserName());
+            user.setPhone(request.getPhone());
+            user.setAddress(request.getAddress());
+            user.setUserRole(request.getUserRole());
+            user.setDateOfBirth(request.getDateOfBirth());
+            user.setStatus(request.getStatus().ACTIVE);
 
-                Student student = new Student();
-                Authentication authentication = new UsernamePasswordAuthenticationToken(student.getEmail(),
-                        student.getPassword());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(),
+                    user.getPassword());
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                String token = jwtProvider.generateToken(authentication);
-                student.setEmail(email);
-                student.setPassword(passwordEncoder.encode(password));
-                student.setName(name);
-                student.setUserName(username);
-                student.setPhone(phone);
-                student.setAddress(address);
-                student.setDateOfBirth(dateOfBirth);
-                student.setStatus(AccountStatus.ACTIVE);
-                student.setUserRole(Role.STUDENT);
+            String token = jwtProvider.generateToken(authentication);
 
-                Student savedStudent = studentRepository.save(student);
-
-                AuthResponse authResponse = new AuthResponse();
-                authResponse.setJwt(token);
-                authResponse.setMessage("Register Successfully");
-                authResponse.setUser(savedStudent);
-
-                return new ResponseEntity<>(new ResponseObject(true, "Student registered successfully", authResponse),
-                        HttpStatus.CREATED);
-
-            } else {
-
-                User createdUser = new User();
-                createdUser.setEmail(email);
-                createdUser.setPassword(passwordEncoder.encode(password));
-                createdUser.setName(name);
-                createdUser.setAddress(address);
-                createdUser.setUserName(username);
-                createdUser.setPhone(phone);
-                createdUser.setUserRole(Role.STUDENT);
-                createdUser.setDateOfBirth(dateOfBirth);
-                createdUser.setStatus(AccountStatus.ACTIVE);
-
-                User savedUser = userRepository.save(createdUser);
-
-                Authentication authentication = new UsernamePasswordAuthenticationToken(savedUser.getEmail(),
-                        savedUser.getPassword());
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                String token = jwtProvider.generateToken(authentication);
-
-                AuthResponse authResponse = new AuthResponse();
-                authResponse.setJwt(token);
-                authResponse.setMessage("Register Successfully");
-                authResponse.setUser(savedUser);
-
-                ResponseObject responseObject = new ResponseObject(true, "User registered successfully", authResponse);
-                return new ResponseEntity<>(responseObject, HttpStatus.CREATED);
-            }
+            User savedUser = userRepository.save(user);
+            return new ResponseEntity<>(new ResponseObject(true, "User registered successfully",
+                    new AuthResponse(token, "Register Successfully", savedUser)), HttpStatus.CREATED);
         } catch (Exception e) {
-            ResponseObject responseObject = new ResponseObject(false, e.getMessage(), null);
-            return new ResponseEntity<>(responseObject, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ResponseObject(false, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/register/student")
+    public ResponseEntity<ResponseObject> createStudent(@RequestBody UserRegisterRequest request) {
+        try {
+            if (userRepository.findByEmail(request.getEmail()) != null) {
+                throw new RuntimeException("Email is already used");
+            }
+            if (userRepository.findByUserName(request.getUserName()) != null) {
+                throw new RuntimeException("Username is already used");
+            }
+
+            Student student = new Student();
+            student.setEmail(request.getEmail());
+            student.setPassword(passwordEncoder.encode(request.getPassword()));
+            student.setName(request.getName());
+            student.setUserName(request.getUserName());
+            student.setPhone(request.getPhone());
+            student.setAddress(request.getAddress());
+            student.setUserRole(request.getUserRole());
+            student.setDateOfBirth(request.getDateOfBirth());
+            student.setStatus(request.getStatus().ACTIVE);
+
+            StudentInfo studentInfo = new StudentInfo();
+            studentInfo.setSchool(request.getStudentInfo().getSchool());
+            studentInfo.setStudyStatus(request.getStudentInfo().getStudyStatus());
+            studentInfo.setStudent(student);
+            student.setInfo(studentInfo);
+
+            Authentication authentication = new UsernamePasswordAuthenticationToken(student.getEmail(),
+                    student.getPassword());
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String token = jwtProvider.generateToken(authentication);
+
+            Student savedStudent = studentRepository.save(student);
+            return new ResponseEntity<>(new ResponseObject(true, "Student registered successfully",
+                    new AuthResponse(token, "Register Successfully", savedStudent)), HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseObject(false, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/register/teacher")
+    public ResponseEntity<ResponseObject> createTeacher(@RequestBody UserRegisterRequest request) {
+        try {
+            if (userRepository.findByEmail(request.getEmail()) != null) {
+                throw new RuntimeException("Email is already used");
+            }
+            if (userRepository.findByUserName(request.getUserName()) != null) {
+                throw new RuntimeException("Username is already used");
+            }
+
+            Teacher teacher = new Teacher();
+            teacher.setEmail(request.getEmail());
+            teacher.setPassword(passwordEncoder.encode(request.getPassword()));
+            teacher.setName(request.getName());
+            teacher.setUserName(request.getUserName());
+            teacher.setPhone(request.getPhone());
+            teacher.setAddress(request.getAddress());
+            teacher.setUserRole(request.getUserRole());
+            teacher.setDateOfBirth(request.getDateOfBirth());
+            teacher.setStatus(request.getStatus().ACTIVE);
+
+            TeacherInfo teacherInfo = new TeacherInfo();
+            teacherInfo.setSchool(request.getTeacherInfo().getSchool());
+            teacherInfo.setTeacher(teacher);
+            teacher.setInfo(teacherInfo);
+
+            Authentication authentication = new UsernamePasswordAuthenticationToken(teacher.getEmail(),
+                    teacher.getPassword());
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String token = jwtProvider.generateToken(authentication);
+
+            Teacher savedTeacher = teacherRepository.save(teacher);
+            return new ResponseEntity<>(new ResponseObject(true, "Teacher registered successfully",
+                    new AuthResponse(token, "Register Successfully", savedTeacher)), HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseObject(false, e.getMessage(), null), HttpStatus.BAD_REQUEST);
         }
     }
 

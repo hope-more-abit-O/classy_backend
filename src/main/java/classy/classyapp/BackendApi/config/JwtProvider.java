@@ -1,10 +1,12 @@
 package classy.classyapp.BackendApi.config;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -22,6 +24,9 @@ public class JwtProvider {
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + 846000000))
                 .claim("email", auth.getName())
+                .claim("authorities", auth.getAuthorities().stream()
+                                 .map(GrantedAuthority::getAuthority)
+                                 .collect(Collectors.joining(",")))
                 .signWith(key)
                 .compact();
 
