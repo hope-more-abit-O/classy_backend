@@ -1,40 +1,39 @@
 package classy.classyapp.BackendApi.globalResponse;
 
-public class ResponseObject {
+import lombok.Builder;
+import lombok.Data;
+import org.springframework.lang.Nullable;
+
+@Data
+@Builder
+public class ResponseObject<T> {
     private boolean status;
     private String message;
-    private Object data;
+    private T data;
 
     public ResponseObject() {
     }
 
-    public ResponseObject(boolean status, String message, Object data) {
+    public ResponseObject(boolean status, String message, T data) {
         this.status = status;
         this.message = message;
         this.data = data;
     }
 
-    public boolean getStatus() {
-        return status;
+    public <T> ResponseObject<T> body(@Nullable T data){
+        return new ResponseObject<T>(this.status, this.message, data);
+    }
+    public static <T> ResponseObject<T> ok(@Nullable T data){
+        return new ResponseObject<T>(true, "Success", data);
+    }
+    public static <T> ResponseObject<T> ok(@Nullable T data, String message){
+        return new ResponseObject<>(true, message, data);
+    }
+    public static <T> ResponseObject<T> failed(@Nullable T data){
+        return new ResponseObject<>(false, "Failed", data);
+    }
+    public static <T> ResponseObject<T> failed(@Nullable T data, String message){
+        return new ResponseObject<>(false, message, data);
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Object getData() {
-        return data;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
-    }
 }
