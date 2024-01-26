@@ -27,6 +27,9 @@ public class AppConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/class-token/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/test").authenticated()
                         .requestMatchers("/api/v1/**").authenticated()
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/student/**").hasRole("STUDENT")
@@ -56,6 +59,7 @@ public class AppConfig {
 
     @Bean
     PasswordEncoder passwordEncoder() {
+        
         return new BCryptPasswordEncoder();
     }
 }
